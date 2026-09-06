@@ -14,6 +14,28 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+export type LabStatus = "completed" | "in-progress" | "planned";
+
+// One captured artifact from the build — screenshot, render, or diagram.
+// `image` is a path under /public, resolved against the Vite base at render time.
+export type Evidence = {
+  label: string;
+  title: string;
+  caption: string;
+  image?: string;
+};
+
+// Generic pipeline shape: a linear head, an optional parallel branch, and an
+// optional node the branch merges back into.
+export type Workflow = {
+  steps: string[];
+  branch?: string[];
+  merge?: string;
+  note: string;
+};
+
+// Everything below `overview` is optional so unfinished weeks keep rendering
+// the "coming soon" state without needing placeholder data.
 export type LabProject = {
   slug: string;
   week: number;
@@ -25,6 +47,17 @@ export type LabProject = {
   overview: string;
   icon: LucideIcon;
   accent: string; // hex accent used for hover glow / tech badges
+  status?: LabStatus;
+  subtitle?: string;
+  description?: string[];
+  objective?: string;
+  stack?: { label: string; value: string }[];
+  workflow?: Workflow;
+  evidence?: Evidence[];
+  learned?: string[];
+  next?: { label: string; slug?: string };
+  repo?: string;
+  artifacts?: { label: string; file: string }[];
 };
 
 // 12-Week Build-First Roadmap — Robotics Simulation Lab.
@@ -34,15 +67,85 @@ export const labProjects: LabProject[] = [
   {
     slug: "amr-foundations",
     week: 1,
-    title: "AMR Foundations — ROS 2 Robot in Gazebo",
-    morphology: "Autonomous mobile robot",
+    title: "AMR Foundations — CAD to ROS 2 Simulation",
+    subtitle:
+      "Designing, modelling and simulating a differential-drive mobile robot using CAD, URDF, Gazebo and RViz.",
+    morphology: "Differential-drive mobile robot",
     simulation: "Gazebo + ROS 2",
-    focus: "Kinematics, sensing, teleop",
-    tech: ["ROS 2", "Gazebo", "URDF/Xacro", "TF2", "Differential drive"],
+    focus: "CAD → URDF → simulation",
+    tech: ["Onshape", "ROS 2", "Gazebo", "URDF", "RViz", "TF2"],
     overview:
-      "A minimal differential-drive robot modeled from scratch — correct URDF, LiDAR and IMU, a simple drive controller, and teleop with LiDAR visualized in RViz.",
+      "An original CAD model of a differential-drive mobile robot, converted into a ROS 2 robot description and taken all the way through Gazebo simulation, RViz visualization and a verified TF frame tree.",
     icon: Bot,
     accent: "#a855f7",
+    status: "completed",
+    repo: "https://github.com/Muhd-Mahmud/Pivot",
+    description: [
+      "As the first project in my Robotics Simulation Lab, I designed and modelled a differential-drive mobile robot and converted the mechanical design into a ROS 2-compatible robot description.",
+      "The project follows the workflow from mechanical CAD → URDF → Gazebo → RViz → TF, providing a foundation for future work in autonomous navigation, SLAM, sensor integration and robotic control.",
+      "The primary objective was not only to produce a working simulation, but to understand how a physical robot is represented computationally and how its mechanical structure translates into a ROS 2 system.",
+    ],
+    objective:
+      "Design a differential-drive mobile robot and establish its digital representation in ROS 2, from mechanical CAD through URDF and simulation.",
+    stack: [
+      { label: "CAD", value: "Onshape" },
+      { label: "Robotics", value: "ROS 2" },
+      { label: "Simulation", value: "Gazebo" },
+      { label: "Visualization", value: "RViz" },
+      { label: "Robot description", value: "URDF" },
+      { label: "Coordinate transforms", value: "TF2" },
+    ],
+    workflow: {
+      steps: ["CAD Design", "Robot Geometry", "URDF"],
+      branch: ["Gazebo", "RViz"],
+      merge: "TF2 — Frame Structure",
+      note: "The CAD model defines the mechanical structure, while the URDF provides its computational representation as links and joints. Gazebo provides the simulation environment, RViz provides ROS-based visualization, and TF defines the spatial relationships between the robot's coordinate frames.",
+    },
+    evidence: [
+      {
+        label: "Evidence 01",
+        title: "CAD model",
+        caption:
+          "Original CAD design: mechanical model of the differential-drive mobile robot, created in Onshape specifically for this project.",
+        image: "lab/amr-foundations/cad.png",
+      },
+      {
+        label: "Evidence 02",
+        title: "Gazebo simulation",
+        caption:
+          "The custom robot model successfully spawned into a simulated environment.",
+        image: "lab/amr-foundations/gazebo.png",
+      },
+      {
+        label: "Evidence 03",
+        title: "RViz visualization",
+        caption:
+          "ROS 2 robot description visualized within the ROS ecosystem.",
+        image: "lab/amr-foundations/rviz.png",
+      },
+      {
+        label: "Evidence 04",
+        title: "TF frame architecture",
+        caption:
+          "Every link's coordinate frame rendered in RViz — the spatial relationships that define the robot's structure. The full frame tree is available as a PDF below.",
+        image: "lab/amr-foundations/tf-tree.png",
+      },
+    ],
+    artifacts: [
+      { label: "TF frame tree (PDF)", file: "lab/amr-foundations/tf-tree.pdf" },
+    ],
+    learned: [
+      "How a CAD assembly translates into a robot description.",
+      "How URDF represents links and joints.",
+      "How robot descriptions are loaded into Gazebo.",
+      "How ROS 2 and RViz interact with the robot model.",
+      "How TF represents spatial relationships between robot components.",
+      "How simulation provides the foundation for future autonomy experiments.",
+    ],
+    next: {
+      label: "Lab 02 — Autonomous Mobile Robot: SLAM + Navigation",
+      slug: "amr-slam-nav2",
+    },
   },
   {
     slug: "amr-slam-nav2",

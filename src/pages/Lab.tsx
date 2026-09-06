@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { labProjects, type LabProject } from "@/data/lab-projects";
+import { Check } from "lucide-react";
 
 function ChromeThumb({ project }: { project: LabProject }) {
   const Icon = project.icon;
@@ -41,7 +42,14 @@ function ProjectTab({ project }: { project: LabProject }) {
         className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{ boxShadow: `0 0 40px -8px ${project.accent}66` }}
       />
-      <ChromeThumb project={project} />
+      <div className="relative">
+        <ChromeThumb project={project} />
+        {project.status === "completed" && (
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-black/70 px-2 py-0.5 text-[10px] font-medium text-emerald-300 backdrop-blur">
+            <Check className="h-2.5 w-2.5" /> Completed
+          </span>
+        )}
+      </div>
 
       <h3 className="mt-4 text-base font-semibold leading-tight text-white">
         {project.title}
